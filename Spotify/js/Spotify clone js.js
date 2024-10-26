@@ -37,14 +37,14 @@ const updateSongList = () => {
     for (const song of songs) {
         songUL.innerHTML += `
             <li>
-                <img class="invert" src="Spotify/img/music.svg" alt="">
+                <img class="invert" src="img/music.svg" alt="">
                 <div class="info">
                     <div>${song.replaceAll("%20", " ")}</div>
                     <div>Harry</div>
                 </div>
                 <div class="playnow">
                     <span>Play now</span>
-                    <img class="invert" src="Spotify/img/play.svg" alt="">
+                    <img class="invert" src="img/play.svg" alt="">
                 </div>
             </li>`;
     }
@@ -60,7 +60,7 @@ const playmusic = (track, pause = false) => {
     currentSong.src = `/Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
-        document.getElementById("play").src = "Spotify/img/pause.svg";
+        document.getElementById("play").src = "img/pause.svg";
     }
     document.querySelector(".songinfo").innerHTML = decodeURI(track);
     document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
@@ -107,10 +107,10 @@ async function main() {
     document.getElementById("play").addEventListener("click", () => {
         if (currentSong.paused) {
             currentSong.play();
-            document.getElementById("play").src = "Spotify/img/pause.svg";
+            document.getElementById("play").src = "img/pause.svg";
         } else {
             currentSong.pause();
-            document.getElementById("play").src = "Spotify/img/play.svg";
+            document.getElementById("play").src = "img/play.svg";
         }
     });
 
@@ -162,6 +162,7 @@ async function main() {
 }
 
 main();
+
 
 
 
