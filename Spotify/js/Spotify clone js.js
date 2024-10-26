@@ -37,14 +37,14 @@ const updateSongList = () => {
     for (const song of songs) {
         songUL.innerHTML += `
             <li>
-                <img class="invert" src="img/music.svg" alt="">
+                <img class="invert" src="Spotify/img/music.svg" alt="">
                 <div class="info">
                     <div>${song.replaceAll("%20", " ")}</div>
                     <div>Harry</div>
                 </div>
                 <div class="playnow">
                     <span>Play now</span>
-                    <img class="invert" src="img/play.svg" alt="">
+                    <img class="invert" src="Spotify/img/play.svg" alt="">
                 </div>
             </li>`;
     }
@@ -60,7 +60,7 @@ const playmusic = (track, pause = false) => {
     currentSong.src = `Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
-        document.getElementById("play").src = "img/pause.svg";
+        document.getElementById("play").src = "Spotify/img/pause.svg";
     }
     document.querySelector(".songinfo").innerHTML = decodeURI(track);
     document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
@@ -69,7 +69,7 @@ const playmusic = (track, pause = false) => {
 
 async function displayAlbums() {
     try {
-        let response = await fetch("Spotify/songs/${folder}");
+        let response = await fetch("Spotify/songs/");
         if (!response.ok) throw new Error("Failed to fetch albums");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
@@ -77,13 +77,13 @@ async function displayAlbums() {
         let cardContainer = document.querySelector(".cardContainer");
         cardContainer.innerHTML = "";
         for (let e of anchors) {
-            if (e.href.includes("songs") {
+            if (e.href.includes("Spotify/songs") && !e.href.includes(".htaccess")) {
                 let folder = e.href.split("/").slice(-2)[0];
-                let infoResponse = await fetch(`songs/${folder}/info.json`);
+                let infoResponse = await fetch(`Spotify/songs/${folder}/info.json`);
                 if (!infoResponse.ok) throw new Error("Failed to fetch folder info");
                 let folderInfo = await infoResponse.json();
                 cardContainer.innerHTML += `
-                    <div data-folder="Spotify/songs/${folder}" class="card">
+                    <div data-folder="${folder}" class="card">
                         <img src="Spotify/songs/${folder}/cover.jpg" alt="">
                         <h2>${folderInfo.title}</h2>
                         <p>${folderInfo.description}</p>
@@ -107,10 +107,10 @@ async function main() {
     document.getElementById("play").addEventListener("click", () => {
         if (currentSong.paused) {
             currentSong.play();
-            document.getElementById("play").src = "img/pause.svg";
+            document.getElementById("play").src = "Spotify/img/pause.svg";
         } else {
             currentSong.pause();
-            document.getElementById("play").src = "img/play.svg";
+            document.getElementById("play").src = "Spotify/img/play.svg";
         }
     });
 
@@ -130,9 +130,7 @@ async function main() {
     document.querySelector(".range input").addEventListener("input", (e) => {
         currentSong.volume = parseInt(e.target.value) / 100;
         if (currentSong.volume > 0) {
-            document.querySelector(".volume > img").src = document.querySelector(".volume > img").src.replace("mute.svg", "volume.svg");
-        }
-    });
+            document.querySelector(".volume > img").src = document.querySelector(".volume > img").src.replace("mute.svg", 
 
     document.querySelector(".volume > img").addEventListener("click", (e) => {
         if (e.target.src.includes("volume.svg")) {
