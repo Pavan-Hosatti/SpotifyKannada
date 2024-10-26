@@ -69,7 +69,7 @@ const playmusic = (track, pause = false) => {
 
 async function displayAlbums() {
     try {
-        let response = await fetch("Spotify/songs/");
+        let response = await fetch(`Spotify/songs/`);
         if (!response.ok) throw new Error("Failed to fetch albums");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
@@ -77,7 +77,7 @@ async function displayAlbums() {
         let cardContainer = document.querySelector(".cardContainer");
         cardContainer.innerHTML = "";
         for (let e of anchors) {
-            if (e.href.includes("Spotify/songs") && !e.href.includes(".htaccess")) {
+            if (e.href.includes("songs") && !e.href.includes(".htaccess")) {
                 let folder = e.href.split("/").slice(-2)[0];
                 let infoResponse = await fetch(`Spotify/songs/${folder}/info.json`);
                 if (!infoResponse.ok) throw new Error("Failed to fetch folder info");
@@ -130,7 +130,9 @@ async function main() {
     document.querySelector(".range input").addEventListener("input", (e) => {
         currentSong.volume = parseInt(e.target.value) / 100;
         if (currentSong.volume > 0) {
-            document.querySelector(".volume > img").src = document.querySelector(".volume > img").src.replace("mute.svg", 
+            document.querySelector(".volume > img").src = document.querySelector(".volume > img").src.replace("mute.svg", "volume.svg");
+        }
+    });
 
     document.querySelector(".volume > img").addEventListener("click", (e) => {
         if (e.target.src.includes("volume.svg")) {
@@ -160,6 +162,7 @@ async function main() {
 }
 
 main();
+
 
 
 
