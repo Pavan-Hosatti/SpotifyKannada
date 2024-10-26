@@ -17,7 +17,7 @@ function secondsToMinutes(seconds) {
 async function getsongs(folder) {
     try {
         currfolder = folder;
-        let response = await fetch(`${folder}/`);
+        let response = await fetch(`songs/${folder}/`);
         if (!response.ok) throw new Error("Failed to fetch songs");
 
         let div = document.createElement("div");
@@ -44,14 +44,14 @@ const updateSongList = () => {
     for (const song of songs) {
         songUL.innerHTML += `
             <li>
-                <img class="invert" src="img/music.svg" alt="">
+                <img class="invert" src="songs/img/music.svg" alt="">
                 <div class="info">
                     <div>${song.replaceAll("%20", " ")}</div>
                     <div>Harry</div>
                 </div>
                 <div class="playnow">
                     <span>Play now</span>
-                    <img class="invert" src="img/play.svg" alt="">
+                    <img class="invert" src="songs/img/play.svg" alt="">
                 </div>
             </li>`;
     }
@@ -70,7 +70,7 @@ const playmusic = (track, pause = false) => {
     currentSong.src = `${currfolder}${track}`;
     if (!pause) {
         currentSong.play();
-        document.getElementById("play").src = "img/pause.svg";
+        document.getElementById("play").src = "songs/img/pause.svg";
     }
     document.querySelector(".songinfo").innerHTML = decodeURI(track);
     document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
@@ -141,10 +141,10 @@ async function main() {
     document.getElementById("play").addEventListener("click", () => {
         if (currentSong.paused) {
             currentSong.play();
-            document.getElementById("play").src = "img/pause.svg";
+            document.getElementById("play").src = "songs/img/pause.svg";
         } else {
             currentSong.pause();
-            document.getElementById("play").src = "img/play.svg";
+            document.getElementById("play").src = "songs/img/play.svg";
         }
     });
 
