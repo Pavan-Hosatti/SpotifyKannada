@@ -57,7 +57,7 @@ const updateSongList = () => {
 }
 
 const playmusic = (track, pause = false) => {
-    currentSong.src = `songs/${currfolder}/${track}`;
+    currentSong.src = `Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
         document.getElementById("play").src = "img/pause.svg";
@@ -77,14 +77,14 @@ async function displayAlbums() {
         let cardContainer = document.querySelector(".cardContainer");
         cardContainer.innerHTML = "";
         for (let e of anchors) {
-            if (e.href.includes("songs") && !e.href.includes(".htaccess")) {
+            if (e.href.includes("songs") {
                 let folder = e.href.split("/").slice(-2)[0];
                 let infoResponse = await fetch(`songs/${folder}/info.json`);
                 if (!infoResponse.ok) throw new Error("Failed to fetch folder info");
                 let folderInfo = await infoResponse.json();
                 cardContainer.innerHTML += `
-                    <div data-folder="${folder}" class="card">
-                        <img src="songs/${folder}/cover.jpg" alt="">
+                    <div data-folder="Spotify/songs/${folder}" class="card">
+                        <img src="Spotify/songs/${folder}/cover.jpg" alt="">
                         <h2>${folderInfo.title}</h2>
                         <p>${folderInfo.description}</p>
                     </div>`;
