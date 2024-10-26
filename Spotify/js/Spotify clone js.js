@@ -69,7 +69,7 @@ const playmusic = (track, pause = false) => {
 
 async function displayAlbums() {
     try {
-        let response = await fetch(`Spotify/songs/`);
+        let response = await fetch(`Spotify/songs/${folder}/`);
         if (!response.ok) throw new Error("Failed to fetch albums");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
