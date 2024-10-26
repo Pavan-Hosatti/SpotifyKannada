@@ -97,7 +97,7 @@ async function displayAlbums() {
             });
         });
     } catch (error) {
-        console.error(error);
+        console.log(error);
         alert("Unable to fetch albums. Please try again later.");
     }
 }
