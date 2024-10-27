@@ -10,19 +10,25 @@ function secondsToMinutes(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
-async function getsongs(currfolder) {
+async function getsongs(folder) {
     try {
+        currfolder = folder;
+        console.log(`Fetching songs from folder: ${currfolder}`);
         let response = await fetch(`/Spotify/songs/${currfolder}`);
+        console.log('Response:', response);
         if (!response.ok) throw new Error("Failed to fetch songs");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
+        console.log('Inner HTML:', div.innerHTML);
         let as = div.getElementsByTagName("a");
         songs = [];
         for (let element of as) {
             if (element.href.endsWith(".mp3")) {
+                console.log('Element:', element.href);
                 songs.push(element.href.split(`${currfolder}/`)[1]);
             }
         }
+        console.log('Songs:', songs);
         updateSongList();
     } catch (error) {
         console.error(error);
@@ -50,7 +56,6 @@ const updateSongList = () => {
     Array.from(songUL.getElementsByTagName("li")).forEach((e, index) => {
         e.addEventListener("click", () => {
             playmusic(songs[index]);
-            closeHamburgerMenu();
         });
     });
 }
@@ -60,6 +65,9 @@ const playmusic = (track, pause = false) => {
     if (!pause) {
         currentSong.play();
         document.getElementById("play").src = "Spotify/img/pause.svg";
+    } else {
+        currentSong.pause();
+        document.getElementById("play").src = "Spotify/img/play.svg";
     }
     document.querySelector(".songinfo").innerHTML = decodeURI(track);
     document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
@@ -67,6 +75,7 @@ const playmusic = (track, pause = false) => {
 }
 
 async function displayAlbums() {
+    console.log('Displaying albums');
     try {
         let response = await fetch(`/Spotify/songs/`);
         if (!response.ok) throw new Error("Failed to fetch albums");
@@ -78,21 +87,12 @@ async function displayAlbums() {
         for (let e of anchors) {
             if (e.href.includes("songs") && !e.href.includes(".htaccess")) {
                 let folder = e.href.split("/").slice(-2)[0];
-                let infoResponse = await fetch(`/Spotify/songs/${folder}/info.json`);
-                if (!infoResponse.ok) throw new Error("Failed to fetch folder info");
-                let folderInfo = await infoResponse.json();
-                cardContainer.innerHTML += `
-                    <div data-folder="${folder}" class="card">
-                        <img src="Spotify/songs/${folder}/cover.jpg" alt="">
-                        <h2>${folderInfo.title}</h2>
-                        <p>${folderInfo.description}</p>
-                    </div>`;
+                cardContainer.innerHTML += `<div data-folder="${folder}" class="card">${folder}</div>`;
             }
         }
         document.querySelectorAll(".card").forEach(card => {
             card.addEventListener("click", async function () {
                 await getsongs(this.dataset.folder);
-                playmusic(songs[0]);
             });
         });
     } catch (error) {
@@ -161,6 +161,7 @@ async function main() {
 }
 
 main();
+
 
 
 
