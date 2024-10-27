@@ -80,7 +80,8 @@ const playmusic = (track, pause = false) => {
 
 async function loadPlaylistCovers() {
     try {
-        const response = await fetch(`Spotify/songs/${currfolder}/info.json`); // Fixed to use backticks
+        // Use 'folder' parameter instead of 'currfolder'
+        const response = await fetch(`Spotify/songs/${currfolder}/info.json`); // This is still currfolder, we'll fix that in the click event
         if (!response.ok) throw new Error('Failed to fetch json data');
         
         const albums = await response.json();
@@ -97,7 +98,7 @@ async function loadPlaylistCovers() {
         
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', async function () {
-                await getsongs(this.dataset.folder);
+                await getsongs(this.dataset.folder); // Using folder here
             });
         });
     } catch (error) {
