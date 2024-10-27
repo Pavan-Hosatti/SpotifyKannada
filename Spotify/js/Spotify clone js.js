@@ -86,13 +86,17 @@ async function loadPlaylistCovers() {
 
         for (const folder of playlistFolders) {
             try {
-                const response = await fetch(`Spotify/songs/${folder}/info.json`);
+                const response = await fetch(`Spotify/albums.json`);
                 if (!response.ok) throw new Error(`Could not fetch info.json for ${folder}`);
                 
-                const albumData = await response.json();
-                cardContainer.innerHTML += `
-                    <div data-folder="${folder}" class="card">
-                        <img src="Spotify/songs/${folder}/cover.jpg" alt="${albumData.name} cover">
+                const albums = await response.json();
+                const cardContainer = document.querySelector('.cardContainer');
+                cardContainer.innerHTML = '';
+
+                albums.forEach(album =>{
+                    cardContainer.innerHTML += `
+                    <div data-folder="${album.folder}" class="card">
+                        <img src="Spotify/songs/${album.folder}/cover.jpg" alt="${albumData.name} cover">
                         <div>${albumData.name}</div>
                     </div>`;
             } catch (error) {
