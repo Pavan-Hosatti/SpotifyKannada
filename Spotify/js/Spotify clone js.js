@@ -153,6 +153,21 @@ async function main() {
     });
 }
 
+
+async function testFetch() {
+    try {
+        let response = await fetch('/Spotify/songs/SALAAM ROCKY BHAI KGF Chapter 1 Yash, Srinidhi Shetty Prashant Neel.mp3');
+        console.log('Test Fetch Response:', response);
+        if (!response.ok) throw new Error('Failed to fetch sample song');
+        alert('Sample song fetch successful!');
+    } catch (error) {
+        console.error(error);
+        alert('Unable to fetch sample song. Please try again later.');
+    }
+}
+
+
+
 main();
 
 
