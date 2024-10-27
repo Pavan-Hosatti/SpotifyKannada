@@ -80,30 +80,21 @@ const playmusic = (track, pause = false) => {
 
 async function loadPlaylistCovers() {
     try {
-        const playlistFolders = ['emotional', 'feel_good', 'powerful_and_energetic', 'romantic_and_soulful'];
+        const response = await fetch('Spotify/album.json');
+        if (!response.ok) throw new Error('Failed to fetch album data');
+        
+        const albums = await response.json();
         const cardContainer = document.querySelector('.cardContainer');
         cardContainer.innerHTML = '';
-
-        for (const folder of playlistFolders) {
-            try {
-                const response = await fetch(`Spotify/albums.json`);
-                if (!response.ok) throw new Error(`Could not fetch info.json for ${folder}`);
-                
-                const albums = await response.json();
-                const cardContainer = document.querySelector('.cardContainer');
-                cardContainer.innerHTML = '';
-
-                albums.forEach(album =>{
-                    cardContainer.innerHTML += `
-                    <div data-folder="${album.folder}" class="card">
-                        <img src="Spotify/songs/${album.folder}/cover.jpg" alt="${albumData.name} cover">
-                        <div>${albumData.name}</div>
-                    </div>`;
-            } catch (error) {
-                console.error(`Error fetching JSON for folder ${folder}:`, error);
-            }
-        }
-
+        
+        albums.forEach(album => {
+            cardContainer.innerHTML += `
+                <div data-folder="${album.folder}" class="card">
+                    <img src="Spotify/songs/${album.folder}/cover.jpg" alt="${album.name} cover">
+                    <div>${album.name}</div>
+                </div>`;
+        });
+        
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', async function () {
                 await getsongs(this.dataset.folder);
@@ -117,7 +108,6 @@ async function loadPlaylistCovers() {
 
 async function main() {
     await loadPlaylistCovers();
-    
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
@@ -176,6 +166,7 @@ async function main() {
 }
 
 main();
+
 
 
 
