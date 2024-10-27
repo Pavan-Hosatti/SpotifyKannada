@@ -57,8 +57,8 @@ const updateSongList = () => {
 // Play selected song
 const playmusic = (track, pause = false) => {
     currentSong.src = `Spotify/songs/${currfolder}/${track}`;
-    currentSong.load(); // Ensures audio is fully loaded
-    console.log("Loading track:", currentSong.src); // Verify correct song path
+    currentSong.load();
+    console.log("Loading track:", currentSong.src);
     
     if (!pause) {
         currentSong.play().then(() => {
@@ -71,10 +71,12 @@ const playmusic = (track, pause = false) => {
         currentSong.pause();
         document.getElementById('play').src = 'Spotify/img/play.svg';
     }
+
     document.querySelector('.songinfo').innerHTML = decodeURI(track);
     document.querySelector('.songtime').innerHTML = '00:00 / 00:00';
     currentIndex = songs.indexOf(track);
-}
+};
+
 
 // Load album data from albums.json
 async function loadAlbumData() {
