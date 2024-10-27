@@ -14,15 +14,15 @@ async function getsongs(folder) {
     try {
         currfolder = folder;
         console.log(`Fetching songs from folder: Spotify/songs/${currfolder}/info.json`);
-        
-        // Fetch the info.json file for song data
+
+        // Fetching song data from the info.json file
         let response = await fetch(`Spotify/songs/${currfolder}/info.json`);
         console.log('Response:', response);
         
         if (!response.ok) throw new Error('Failed to fetch songs');
-        
-        let data = await response.json(); // Expecting a song list in JSON format
-        songs = data.songs || []; // Ensure JSON structure aligns here
+
+        let data = await response.json();
+        songs = data.songs || [];  // Make sure the info.json has a "songs" array field
         
         console.log('Songs:', songs);
         updateSongList();
@@ -72,7 +72,7 @@ const playmusic = (track, pause = false) => {
 
 async function loadAlbumData() {
     try {
-        const response = await fetch('Spotify/album.json');
+        const response = await fetch('Spotify/albums.json');
         console.log('Album response status:', response.status);
         
         if (!response.ok) {
@@ -165,6 +165,7 @@ async function main() {
 }
 
 main();
+
 
 
 
