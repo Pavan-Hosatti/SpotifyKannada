@@ -1,3 +1,14 @@
+let currentSong = new Audio();
+let songs = [];
+let currentIndex = -1;
+
+function secondsToMinutes(seconds) {
+    if (isNaN(seconds) || seconds < 0) return "00:00";
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+}
+
 async function getsongs(folder) {
     try {
         currfolder = folder;
@@ -22,6 +33,44 @@ async function getsongs(folder) {
         console.error(error);
         alert('Unable to fetch songs. Please try again later.');
     }
+}
+
+const updateSongList = () => {
+    let songUL = document.querySelector('.songlist ul');
+    songUL.innerHTML = '';
+    for (const song of songs) {
+        songUL.innerHTML += `
+            <li>
+                <img class='invert' src='Spotify/img/music.svg' alt=''>
+                <div class='info'>
+                    <div>${song.replaceAll('%20', ' ')}</div>
+                    <div>Harry</div>
+                </div>
+                <div class='playnow'>
+                    <span>Play now</span>
+                    <img class='invert' src='Spotify/img/play.svg' alt=''>
+                </div>
+            </li>`;
+    }
+    Array.from(songUL.getElementsByTagName('li')).forEach((e, index) => {
+        e.addEventListener('click', () => {
+            playmusic(songs[index]);
+        });
+    });
+}
+
+const playmusic = (track, pause = false) => {
+    currentSong.src = `/Spotify/songs/${currfolder}/${track}`;
+    if (!pause) {
+        currentSong.play();
+        document.getElementById('play').src = 'Spotify/img/pause.svg';
+    } else {
+        currentSong.pause();
+        document.getElementById('play').src = 'Spotify/img/play.svg';
+    }
+    document.querySelector('.songinfo').innerHTML = decodeURI(track);
+    document.querySelector('.songtime').innerHTML = '00:00 / 00:00';
+    currentIndex = songs.indexOf(track);
 }
 
 async function displayAlbums() {
@@ -112,6 +161,7 @@ async function main() {
 }
 
 main();
+
 
 
 
