@@ -15,17 +15,17 @@ async function getsongs(folder) {
         currfolder = folder;
         console.log(`Fetching songs from folder: Spotify/songs/${currfolder}/info.json`);
 
-        // Fetching song data from the info.json file
+        // Fetch song data from the info.json file
         let response = await fetch(`Spotify/songs/${currfolder}/info.json`);
         console.log('Response:', response);
         
         if (!response.ok) throw new Error('Failed to fetch songs');
 
         let data = await response.json();
-        songs = data.songs || [];  // Make sure the info.json has a "songs" array field
+        songs = data.songs || [];  // Make sure info.json has a "songs" array field
         
         console.log('Songs:', songs);
-        updateSongList();
+        updateSongList();  // Load the song list once songs are fetched
     } catch (error) {
         console.error(error);
         alert('Unable to fetch songs. Please try again later.');
@@ -97,6 +97,8 @@ async function loadAlbumData() {
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', async function () {
                 await getsongs(this.dataset.folder);
+                // Load the song list immediately when playlist card is clicked
+                updateSongList();
             });
         });
     } catch (error) {
