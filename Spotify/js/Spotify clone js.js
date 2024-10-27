@@ -81,7 +81,7 @@ const playmusic = (track, pause = false) => {
 async function loadPlaylistCovers() {
     try {
         // Use 'folder' parameter instead of 'currfolder'
-        const response = await fetch(`Spotify/songs/${currfolder}/info.json`); // This is still currfolder, we'll fix that in the click event
+        const response = await fetch(`Spotify/songs/info.json`); // This is still currfolder, we'll fix that in the click event
         if (!response.ok) throw new Error('Failed to fetch json data');
         
         const albums = await response.json();
