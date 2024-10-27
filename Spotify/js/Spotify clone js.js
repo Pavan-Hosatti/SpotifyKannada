@@ -80,7 +80,7 @@ const playmusic = (track, pause = false) => {
 
 async function loadPlaylistCovers() {
     try {
-        const response = await fetch('Spotify/songs/${folder}/info.json');
+        const response = await fetch(`Spotify/songs/${currfolder}/info.json`); // Fixed to use backticks
         if (!response.ok) throw new Error('Failed to fetch json data');
         
         const albums = await response.json();
@@ -89,7 +89,7 @@ async function loadPlaylistCovers() {
         
         albums.forEach(album => {
             cardContainer.innerHTML += `
-                <div data-title="${album.title}" class="card">
+                <div data-folder="${album.title}" class="card">
                     <img src="Spotify/songs/${album.title}/cover.jpg" alt="${album.name} cover">
                     <div>${album.name}</div>
                 </div>`;
@@ -108,6 +108,7 @@ async function loadPlaylistCovers() {
 
 async function main() {
     await loadPlaylistCovers();
+    
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
