@@ -1,6 +1,7 @@
 let currentSong = new Audio();
 let songs = [];
 let currentIndex = -1;
+let currfolder = ''; // Declare currfolder here
 
 function secondsToMinutes(seconds) {
     if (isNaN(seconds) || seconds < 0) return "00:00";
@@ -73,23 +74,28 @@ const playmusic = (track, pause = false) => {
     currentIndex = songs.indexOf(track);
 }
 
-async function displayAlbums() {
+async function loadAlbumData() {
     try {
-        let response = await fetch('/Spotify/songs/');
-        console.log('Albums Response:', response);
-        if (!response.ok) throw new Error('Failed to fetch albums');
-        let div = document.createElement('div');
-        div.innerHTML = await response.text();
-        let anchors = div.getElementsByTagName('a');
+        const response = await fetch('/Spotify/album.json'); // Path to your album.json
+        if (!response.ok) throw new Error('Failed to fetch album data');
+        const albums = await response.json();
+        
         let cardContainer = document.querySelector('.cardContainer');
-        cardContainer.innerHTML = '';
-        for (let e of anchors) {
-            if (e.href.includes('songs') && !e.href.includes('.htaccess')) {
-                let folder = e.href.split('/').slice(-2)[0];
-                console.log('Folder:', folder);
-                cardContainer.innerHTML += `<div data-folder="${folder}" class="card">${folder}</div>`;
-            }
-        }
+        cardContainer.innerHTML = ''; // Clear existing content
+
+        // Loop through albums and create cards
+        albums.forEach(album => {
+            const { name, folder, cover } = album;
+            cardContainer.innerHTML += `
+                <div data-folder="${folder}" class="card">
+                    <img src="/Spotify/img/${cover}" alt="${name} cover" class="cover" />
+                    <div class="album-info">
+                        <h3>${name}</h3>
+                    </div>
+                </div>`;
+        });
+
+        // Add event listeners to the album cards
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', async function () {
                 await getsongs(this.dataset.folder);
@@ -97,12 +103,12 @@ async function displayAlbums() {
         });
     } catch (error) {
         console.error(error);
-        alert('Unable to fetch albums. Please try again later.');
+        alert('Unable to load album data.');
     }
 }
 
 async function main() {
-    await displayAlbums();
+    await loadAlbumData(); // Load album data
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
@@ -161,6 +167,7 @@ async function main() {
 }
 
 main();
+
 
 
 
