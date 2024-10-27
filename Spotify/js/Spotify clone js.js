@@ -57,9 +57,16 @@ const updateSongList = () => {
 // Play selected song
 const playmusic = (track, pause = false) => {
     currentSong.src = `Spotify/songs/${currfolder}/${track}`;
+    currentSong.load(); // Ensures audio is fully loaded
+    console.log("Loading track:", currentSong.src); // Verify correct song path
+    
     if (!pause) {
-        currentSong.play();
-        document.getElementById('play').src = 'Spotify/img/pause.svg';
+        currentSong.play().then(() => {
+            console.log("Song is playing");
+            document.getElementById('play').src = 'Spotify/img/pause.svg';
+        }).catch(error => {
+            console.error("Playback failed:", error);
+        });
     } else {
         currentSong.pause();
         document.getElementById('play').src = 'Spotify/img/play.svg';
@@ -174,10 +181,6 @@ main();
 
 
 
-
-
-
-
 // let currentSong = new Audio();
 // let songs = [];
 // let currentIndex = -1;
@@ -190,21 +193,18 @@ main();
 //     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 // }
 
+// // Fetch and display songs when a playlist is clicked
 // async function getsongs(folder) {
 //     try {
 //         currfolder = folder;
-//         console.log(`Fetching songs from folder: Spotify/songs/${currfolder}/info.json`);
-
-//         // Fetching song data from the info.json file
-//         let response = await fetch(`Spotify/songs/${currfolder}/info.json`);
-//         console.log('Response:', response);
+//         console.log(`Fetching songs from Spotify/songs/${currfolder}/info.json`);
         
+//         let response = await fetch(`Spotify/songs/${currfolder}/info.json`);
 //         if (!response.ok) throw new Error('Failed to fetch songs');
 
 //         let data = await response.json();
-//         songs = data.songs || [];  // Make sure the info.json has a "songs" array field
+//         songs = data.songs || [];
         
-//         console.log('Songs:', songs);
 //         updateSongList();
 //     } catch (error) {
 //         console.error(error);
@@ -212,6 +212,7 @@ main();
 //     }
 // }
 
+// // Update the displayed song list
 // const updateSongList = () => {
 //     let songUL = document.querySelector('.songlist ul');
 //     songUL.innerHTML = '';
@@ -221,7 +222,7 @@ main();
 //                 <img class='invert' src='Spotify/img/music.svg' alt=''>
 //                 <div class='info'>
 //                     <div>${song.replaceAll('%20', ' ')}</div>
-//                     <div>Harry</div>
+//                     <div>Artist</div>
 //                 </div>
 //                 <div class='playnow'>
 //                     <span>Play now</span>
@@ -236,6 +237,7 @@ main();
 //     });
 // }
 
+// // Play selected song
 // const playmusic = (track, pause = false) => {
 //     currentSong.src = `Spotify/songs/${currfolder}/${track}`;
 //     if (!pause) {
@@ -250,19 +252,13 @@ main();
 //     currentIndex = songs.indexOf(track);
 // }
 
+// // Load album data from albums.json
 // async function loadAlbumData() {
 //     try {
 //         const response = await fetch('Spotify/albums.json');
-//         console.log('Album response status:', response.status);
-        
-//         if (!response.ok) {
-//             console.error('Response error:', response.statusText);
-//             throw new Error('Failed to fetch album data');
-//         }
+//         if (!response.ok) throw new Error('Failed to fetch album data');
         
 //         const albums = await response.json();
-//         console.log('Fetched albums:', albums);
-        
 //         const cardContainer = document.querySelector('.cardContainer');
 //         cardContainer.innerHTML = '';
         
@@ -285,8 +281,10 @@ main();
 //     }
 // }
 
+// // Initialize app
 // async function main() {
 //     await loadAlbumData();
+    
 //     document.getElementById('play').addEventListener('click', () => {
 //         if (currentSong.paused) {
 //             currentSong.play();
@@ -312,9 +310,6 @@ main();
 
 //     document.querySelector('.range input').addEventListener('input', (e) => {
 //         currentSong.volume = parseInt(e.target.value) / 100;
-//         if (currentSong.volume > 0) {
-//             document.querySelector('.volume > img').src = document.querySelector('.volume > img').src.replace('mute.svg', 'volume.svg');
-//         }
 //     });
 
 //     document.querySelector('.volume > img').addEventListener('click', (e) => {
@@ -345,6 +340,27 @@ main();
 // }
 
 // main();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
