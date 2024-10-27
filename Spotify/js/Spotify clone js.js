@@ -9,10 +9,10 @@ function secondsToMinutes(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
-async function getsongs() {
+async function getsongs(folder) {
     try {
-        let response = await fetch('/Spotify/songs/');
-        console.log('Songs Response:', response);
+        currfolder = folder;
+        let response = await fetch(`/Spotify/songs/${folder}/`);
         if (!response.ok) throw new Error('Failed to fetch songs');
         let div = document.createElement('div');
         div.innerHTML = await response.text();
@@ -20,7 +20,7 @@ async function getsongs() {
         songs = [];
         for (let element of as) {
             if (element.href.endsWith('.mp3')) {
-                songs.push(element.href.split('/Spotify/songs/')[1]);
+                songs.push(element.href.split(`${folder}/`)[1]);
             }
         }
         updateSongList();
@@ -55,7 +55,7 @@ const updateSongList = () => {
 }
 
 const playmusic = (track, pause = false) => {
-    currentSong.src = `/Spotify/songs/${track}`;
+    currentSong.src = `/Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
         document.getElementById('play').src = 'Spotify/img/pause.svg';
@@ -79,13 +79,13 @@ async function displayAlbums() {
         cardContainer.innerHTML = '';
         for (let e of anchors) {
             if (e.href.includes('songs') && !e.href.includes('.htaccess')) {
-                let song = e.href.split('/').slice(-1)[0];
-                cardContainer.innerHTML += `<div data-song="${song}" class='card'>${song}</div>`;
+                let folder = e.href.split('/').slice(-2)[0];
+                cardContainer.innerHTML += `<div data-folder="${folder}" class='card'>${folder}</div>`;
             }
         }
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', async function () {
-                playmusic(this.dataset.song);
+                await getsongs(this.dataset.folder);
             });
         });
     } catch (error) {
@@ -153,22 +153,8 @@ async function main() {
     });
 }
 
-
-async function testFetch() {
-    try {
-        let response = await fetch('/Spotify/songs/SALAAM ROCKY BHAI KGF Chapter 1 Yash, Srinidhi Shetty Prashant Neel.mp3');
-        console.log('Test Fetch Response:', response);
-        if (!response.ok) throw new Error('Failed to fetch sample song');
-        alert('Sample song fetch successful!');
-    } catch (error) {
-        console.error(error);
-        alert('Unable to fetch sample song. Please try again later.');
-    }
-}
-
-
-
 main();
+
 
 
 
