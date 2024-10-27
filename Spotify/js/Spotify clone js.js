@@ -10,37 +10,39 @@ function secondsToMinutes(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
-async function getsongs(folder) {
+// Function to load songs from the clicked playlist folder
+async function getSongs(folder) {
     try {
         currfolder = folder;
         console.log(`Fetching songs from folder: Spotify/songs/${currfolder}/info.json`);
 
-        // Fetch song data from the info.json file
+        // Fetching songs from the info.json file inside the selected folder
         let response = await fetch(`Spotify/songs/${currfolder}/info.json`);
-        console.log('Response:', response);
         
         if (!response.ok) throw new Error('Failed to fetch songs');
-
-        let data = await response.json();
-        songs = data.songs || [];  // Make sure info.json has a "songs" array field
         
-        console.log('Songs:', songs);
-        updateSongList();  // Load the song list once songs are fetched
+        let data = await response.json();
+        songs = data.songs || [];
+        
+        console.log('Fetched songs:', songs);
+        updateSongList();  // Update the song list UI
     } catch (error) {
-        console.error(error);
+        console.error('Error loading songs:', error);
         alert('Unable to fetch songs. Please try again later.');
     }
 }
 
+// Function to update the song list UI
 const updateSongList = () => {
     let songUL = document.querySelector('.songlist ul');
     songUL.innerHTML = '';
+    
     for (const song of songs) {
         songUL.innerHTML += `
             <li>
                 <img class='invert' src='Spotify/img/music.svg' alt=''>
                 <div class='info'>
-                    <div>${song.replaceAll('%20', ' ')}</div>
+                    <div>${decodeURI(song.replace(/%20/g, ' '))}</div>
                     <div>Harry</div>
                 </div>
                 <div class='playnow'>
@@ -49,14 +51,17 @@ const updateSongList = () => {
                 </div>
             </li>`;
     }
-    Array.from(songUL.getElementsByTagName('li')).forEach((e, index) => {
-        e.addEventListener('click', () => {
-            playmusic(songs[index]);
+    
+    // Add event listeners to each song item
+    Array.from(songUL.getElementsByTagName('li')).forEach((element, index) => {
+        element.addEventListener('click', () => {
+            playMusic(songs[index]);
         });
     });
 }
 
-const playmusic = (track, pause = false) => {
+// Function to play a song
+const playMusic = (track, pause = false) => {
     currentSong.src = `Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
@@ -70,45 +75,32 @@ const playmusic = (track, pause = false) => {
     currentIndex = songs.indexOf(track);
 }
 
-async function loadAlbumData() {
-    try {
-        const response = await fetch('Spotify/albums.json');
-        console.log('Album response status:', response.status);
-        
-        if (!response.ok) {
-            console.error('Response error:', response.statusText);
-            throw new Error('Failed to fetch album data');
-        }
-        
-        const albums = await response.json();
-        console.log('Fetched albums:', albums);
-        
-        const cardContainer = document.querySelector('.cardContainer');
-        cardContainer.innerHTML = '';
-        
-        albums.forEach(album => {
-            cardContainer.innerHTML += `
-                <div data-folder="${album.folder}" class="card">
-                    <img src="Spotify/songs/${album.folder}/cover.jpg" alt="${album.name} cover">
-                    <div>${album.name}</div>
-                </div>`;
+// Function to dynamically load playlists based on folders in Spotify/songs
+async function loadPlaylists() {
+    const playlists = ['emotional', 'feel_good', 'powerful and energetic', 'romantic_and_soulful']; // List of folders under Spotify/songs
+    
+    const cardContainer = document.querySelector('.cardContainer');
+    cardContainer.innerHTML = '';
+    
+    playlists.forEach(playlist => {
+        cardContainer.innerHTML += `
+            <div data-folder="${playlist}" class="card">
+                <img src="Spotify/songs/${playlist}/cover.jpg" alt="${playlist} cover">
+                <div>${playlist.replace(/_/g, ' ')}</div>
+            </div>`;
+    });
+    
+    // Add event listeners to each playlist card
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', async function () {
+            await getSongs(this.dataset.folder);
         });
-        
-        document.querySelectorAll('.card').forEach(card => {
-            card.addEventListener('click', async function () {
-                await getsongs(this.dataset.folder);
-                // Load the song list immediately when playlist card is clicked
-                updateSongList();
-            });
-        });
-    } catch (error) {
-        console.error('Error loading album data:', error);
-        alert('Unable to load album data.');
-    }
+    });
 }
 
+// Main function to initialize the app
 async function main() {
-    await loadAlbumData();
+    await loadPlaylists();
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
@@ -125,11 +117,11 @@ async function main() {
     });
 
     document.getElementById('previous').addEventListener('click', () => {
-        if (currentIndex > 0) playmusic(songs[currentIndex - 1]);
+        if (currentIndex > 0) playMusic(songs[currentIndex - 1]);
     });
 
     document.getElementById('next').addEventListener('click', () => {
-        if (currentIndex < songs.length - 1) playmusic(songs[currentIndex + 1]);
+        if (currentIndex < songs.length - 1) playMusic(songs[currentIndex + 1]);
     });
 
     document.querySelector('.range input').addEventListener('input', (e) => {
@@ -167,6 +159,7 @@ async function main() {
 }
 
 main();
+
 
 
 
