@@ -10,28 +10,18 @@ function secondsToMinutes(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
+// Fetch and display songs when a playlist is clicked
 async function getsongs(folder) {
     try {
         currfolder = folder;
-        console.log(`Fetching songs from folder: Spotify/songs/${currfolder}`);
+        console.log(`Fetching songs from Spotify/songs/${currfolder}/info.json`);
         
-        let response = await fetch(`Spotify/songs/${currfolder}/`);
+        let response = await fetch(`Spotify/songs/${currfolder}/info.json`);
         if (!response.ok) throw new Error('Failed to fetch songs');
+
+        let data = await response.json();
+        songs = data.songs || [];
         
-        // Parse the response to list only .mp3 files
-        let div = document.createElement('div');
-        div.innerHTML = await response.text();
-        
-        let as = div.getElementsByTagName('a');
-        songs = [];
-        
-        for (let element of as) {
-            if (element.href.endsWith('.mp3')) {
-                songs.push(element.href.split(`${currfolder}/`)[1]);
-            }
-        }
-        
-        console.log('Songs:', songs);
         updateSongList();
     } catch (error) {
         console.error(error);
@@ -39,6 +29,7 @@ async function getsongs(folder) {
     }
 }
 
+// Update the displayed song list
 const updateSongList = () => {
     let songUL = document.querySelector('.songlist ul');
     songUL.innerHTML = '';
@@ -48,7 +39,7 @@ const updateSongList = () => {
                 <img class='invert' src='Spotify/img/music.svg' alt=''>
                 <div class='info'>
                     <div>${song.replaceAll('%20', ' ')}</div>
-                    <div>Harry</div>
+                    <div>Artist</div>
                 </div>
                 <div class='playnow'>
                     <span>Play now</span>
@@ -63,6 +54,7 @@ const updateSongList = () => {
     });
 }
 
+// Play selected song
 const playmusic = (track, pause = false) => {
     currentSong.src = `Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
@@ -77,6 +69,7 @@ const playmusic = (track, pause = false) => {
     currentIndex = songs.indexOf(track);
 }
 
+// Load album data from albums.json
 async function loadAlbumData() {
     try {
         const response = await fetch('Spotify/albums.json');
@@ -105,8 +98,10 @@ async function loadAlbumData() {
     }
 }
 
+// Initialize app
 async function main() {
     await loadAlbumData();
+    
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
@@ -132,9 +127,6 @@ async function main() {
 
     document.querySelector('.range input').addEventListener('input', (e) => {
         currentSong.volume = parseInt(e.target.value) / 100;
-        if (currentSong.volume > 0) {
-            document.querySelector('.volume > img').src = document.querySelector('.volume > img').src.replace('mute.svg', 'volume.svg');
-        }
     });
 
     document.querySelector('.volume > img').addEventListener('click', (e) => {
