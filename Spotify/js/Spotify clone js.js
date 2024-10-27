@@ -9,18 +9,18 @@ function secondsToMinutes(seconds) {
     return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
 }
 
-async function getsongs(folder) {
+async function getsongs() {
     try {
-        currfolder = folder;
-        let response = await fetch(`/Spotify/songs/${folder}/`);
+        let response = await fetch('/Spotify/songs/');
+        console.log('Songs Response:', response);
         if (!response.ok) throw new Error('Failed to fetch songs');
         let div = document.createElement('div');
         div.innerHTML = await response.text();
-        let as = div.getElementsByTagName('a');
+        let anchors = div.getElementsByTagName('a');
         songs = [];
-        for (let element of as) {
-            if (element.href.endsWith('.mp3')) {
-                songs.push(element.href.split(`${folder}/`)[1]);
+        for (let anchor of anchors) {
+            if (anchor.href.includes('.mp3')) {
+                songs.push(anchor.href.split('/Spotify/songs/')[1]);
             }
         }
         updateSongList();
@@ -55,7 +55,7 @@ const updateSongList = () => {
 }
 
 const playmusic = (track, pause = false) => {
-    currentSong.src = `/Spotify/songs/${currfolder}/${track}`;
+    currentSong.src = `/Spotify/songs/${track}`;
     if (!pause) {
         currentSong.play();
         document.getElementById('play').src = 'Spotify/img/pause.svg';
@@ -71,6 +71,7 @@ const playmusic = (track, pause = false) => {
 async function displayAlbums() {
     try {
         let response = await fetch('/Spotify/songs/');
+        console.log('Albums Response:', response);
         if (!response.ok) throw new Error('Failed to fetch albums');
         let div = document.createElement('div');
         div.innerHTML = await response.text();
