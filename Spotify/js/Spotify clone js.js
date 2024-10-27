@@ -14,20 +14,16 @@ async function getsongs(folder) {
     try {
         currfolder = folder;
         console.log(`Fetching songs from folder: /Spotify/songs/${currfolder}`);
-        let response = await fetch(`/Spotify/songs/${currfolder}/`);
+        
+        // Assuming that info.json contains song data
+        let response = await fetch(`/Spotify/songs/${currfolder}/info.json`);
         console.log('Response:', response);
+        
         if (!response.ok) throw new Error('Failed to fetch songs');
-        let div = document.createElement('div');
-        div.innerHTML = await response.text();
-        console.log('Inner HTML:', div.innerHTML);
-        let as = div.getElementsByTagName('a');
-        songs = [];
-        for (let element of as) {
-            if (element.href.endsWith('.mp3')) {
-                console.log('Element:', element.href);
-                songs.push(element.href.split(`${currfolder}/`)[1]);
-            }
-        }
+        
+        let data = await response.json(); // Assuming info.json has a song list in JSON format
+        songs = data.songs || []; // Make sure the JSON structure aligns here
+        
         console.log('Songs:', songs);
         updateSongList();
     } catch (error) {
@@ -61,7 +57,7 @@ const updateSongList = () => {
 }
 
 const playmusic = (track, pause = false) => {
-    currentSong.src = `/${currfolder}/${track}`;
+    currentSong.src = `/Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
         document.getElementById('play').src = '/Spotify/img/pause.svg';
@@ -93,7 +89,7 @@ async function loadAlbumData() {
         albums.forEach(album => {
             cardContainer.innerHTML += `
                 <div data-folder="${album.folder}" class="card">
-                    <img src="/Spotify/img/${album.cover}" alt="${album.name} cover">
+                    <img src="/Spotify/songs/${album.folder}/cover.jpg" alt="${album.name} cover">
                     <div>${album.name}</div>
                 </div>`;
         });
