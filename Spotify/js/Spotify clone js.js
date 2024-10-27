@@ -13,7 +13,8 @@ function secondsToMinutes(seconds) {
 async function getsongs(folder) {
     try {
         currfolder = folder;
-        let response = await fetch(`Spotify/songs/${folder}`);
+        let response = await fetch(`https://Pavan-Hosatti.github.io/SpotifyKannada/Spotify/songs/${folder}`);
+
         if (!response.ok) throw new Error("Failed to fetch songs");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
@@ -69,7 +70,7 @@ const playmusic = (track, pause = false) => {
 
 async function displayAlbums() {
     try {
-        let response = await fetch(`Spotify/songs/${folder}/`);
+        let response = await fetch(`https://Pavan-Hosatti.github.io/SpotifyKannada/Spotify/songs/${folder}`);
         if (!response.ok) throw new Error("Failed to fetch albums");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
@@ -79,7 +80,7 @@ async function displayAlbums() {
         for (let e of anchors) {
             if (e.href.includes("songs") && !e.href.includes(".htaccess")) {
                 let folder = e.href.split("/").slice(-2)[0];
-                let infoResponse = await fetch(`Spotify/songs/${folder}/info.json`);
+               let inforesponse = await fetch(`https://Pavan-Hosatti.github.io/SpotifyKannada/Spotify/songs/${folder}/info.json`);
                 if (!infoResponse.ok) throw new Error("Failed to fetch folder info");
                 let folderInfo = await infoResponse.json();
                 cardContainer.innerHTML += `
