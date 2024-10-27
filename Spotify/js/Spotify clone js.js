@@ -13,27 +13,26 @@ function secondsToMinutes(seconds) {
 async function getsongs(folder) {
     try {
         currfolder = folder;
-        console.log(`Fetching songs from folder: ${currfolder}`);
-        let response = await fetch(`/Spotify/songs/${currfolder}`);
-        console.log('Response:', response);
+        let response = await fetch(`/Spotify/songs/${folder}`);
         if (!response.ok) throw new Error("Failed to fetch songs");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
-        console.log('Inner HTML:', div.innerHTML);
         let as = div.getElementsByTagName("a");
         songs = [];
         for (let element of as) {
             if (element.href.endsWith(".mp3")) {
-                console.log('Element:', element.href);
-                songs.push(element.href.split(`${currfolder}/`)[1]);
+                songs.push(element.href.split(currfolder)[1]);
             }
         }
-        console.log('Songs:', songs);
         updateSongList();
     } catch (error) {
         console.error(error);
         alert("Unable to fetch songs. Please try again later.");
     }
+    console.log('Fetching songs from:', `/Spotify/songs/${folder}`);
+let response = await fetch(`/Spotify/songs/${folder}`);
+console.log('Response status:', response.status);
+
 }
 
 const updateSongList = () => {
@@ -42,20 +41,21 @@ const updateSongList = () => {
     for (const song of songs) {
         songUL.innerHTML += `
             <li>
-                <img class="invert" src="Spotify/img/music.svg" alt="">
+                <img class="invert" src="img/music.svg" alt="">
                 <div class="info">
                     <div>${song.replaceAll("%20", " ")}</div>
                     <div>Harry</div>
                 </div>
                 <div class="playnow">
                     <span>Play now</span>
-                    <img class="invert" src="Spotify/img/play.svg" alt="">
+                    <img class="invert" src="img/play.svg" alt="">
                 </div>
             </li>`;
     }
     Array.from(songUL.getElementsByTagName("li")).forEach((e, index) => {
         e.addEventListener("click", () => {
             playmusic(songs[index]);
+            closeHamburgerMenu();
         });
     });
 }
@@ -64,10 +64,7 @@ const playmusic = (track, pause = false) => {
     currentSong.src = `/Spotify/songs/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
-        document.getElementById("play").src = "Spotify/img/pause.svg";
-    } else {
-        currentSong.pause();
-        document.getElementById("play").src = "Spotify/img/play.svg";
+        document.getElementById("play").src = "img/pause.svg";
     }
     document.querySelector(".songinfo").innerHTML = decodeURI(track);
     document.querySelector(".songtime").innerHTML = "00:00 / 00:00";
@@ -75,9 +72,8 @@ const playmusic = (track, pause = false) => {
 }
 
 async function displayAlbums() {
-    console.log('Displaying albums');
     try {
-        let response = await fetch(`/Spotify/songs/`);
+        let response = await fetch("/Spotify/songs/");
         if (!response.ok) throw new Error("Failed to fetch albums");
         let div = document.createElement("div");
         div.innerHTML = await response.text();
@@ -85,14 +81,23 @@ async function displayAlbums() {
         let cardContainer = document.querySelector(".cardContainer");
         cardContainer.innerHTML = "";
         for (let e of anchors) {
-            if (e.href.includes("songs") && !e.href.includes(".htaccess")) {
+            if (e.href.includes("/Spotify/songs") && !e.href.includes(".htaccess")) {
                 let folder = e.href.split("/").slice(-2)[0];
-                cardContainer.innerHTML += `<div data-folder="${folder}" class="card">${folder}</div>`;
+                let infoResponse = await fetch(`/Spotify/songs/${folder}/info.json`);
+                if (!infoResponse.ok) throw new Error("Failed to fetch folder info");
+                let folderInfo = await infoResponse.json();
+                cardContainer.innerHTML += `
+                    <div data-folder="${folder}" class="card">
+                        <img src="/Spotify/songs/${folder}/cover.jpg" alt="">
+                        <h2>${folderInfo.title}</h2>
+                        <p>${folderInfo.description}</p>
+                    </div>`;
             }
         }
         document.querySelectorAll(".card").forEach(card => {
             card.addEventListener("click", async function () {
                 await getsongs(this.dataset.folder);
+                playmusic(songs[0]);
             });
         });
     } catch (error) {
@@ -106,10 +111,10 @@ async function main() {
     document.getElementById("play").addEventListener("click", () => {
         if (currentSong.paused) {
             currentSong.play();
-            document.getElementById("play").src = "Spotify/img/pause.svg";
+            document.getElementById("play").src = "img/pause.svg";
         } else {
             currentSong.pause();
-            document.getElementById("play").src = "Spotify/img/play.svg";
+            document.getElementById("play").src = "img/play.svg";
         }
     });
 
