@@ -14,7 +14,7 @@ async function getsongs(folder) {
     try {
         currfolder = folder;
         console.log(`Fetching songs from folder: /Spotify/songs/${currfolder}`);
-        let response = await fetch(`https://Pavan-Hosatti.github.io/Spotify/songs/${currfolder}/`);
+        let response = await fetch(`/Spotify/songs/${currfolder}/`);
         console.log('Response:', response);
         if (!response.ok) throw new Error('Failed to fetch songs');
         let div = document.createElement('div');
@@ -42,14 +42,14 @@ const updateSongList = () => {
     for (const song of songs) {
         songUL.innerHTML += `
             <li>
-                <img class='invert' src='https://Pavan-Hosatti.github.io/Spotify/img/music.svg' alt=''>
+                <img class='invert' src='/Spotify/img/music.svg' alt=''>
                 <div class='info'>
                     <div>${song.replaceAll('%20', ' ')}</div>
                     <div>Harry</div>
                 </div>
                 <div class='playnow'>
                     <span>Play now</span>
-                    <img class='invert' src='https://Pavan-Hosatti.github.io/Spotify/img/play.svg' alt=''>
+                    <img class='invert' src='/Spotify/img/play.svg' alt=''>
                 </div>
             </li>`;
     }
@@ -61,13 +61,13 @@ const updateSongList = () => {
 }
 
 const playmusic = (track, pause = false) => {
-    currentSong.src = `https://Pavan-Hosatti.github.io/Spotify/songs/${currfolder}/${track}`;
+    currentSong.src = `/${currfolder}/${track}`;
     if (!pause) {
         currentSong.play();
-        document.getElementById('play').src = 'https://Pavan-Hosatti.github.io/Spotify/img/pause.svg';
+        document.getElementById('play').src = '/Spotify/img/pause.svg';
     } else {
         currentSong.pause();
-        document.getElementById('play').src = 'https://Pavan-Hosatti.github.io/Spotify/img/play.svg';
+        document.getElementById('play').src = '/Spotify/img/play.svg';
     }
     document.querySelector('.songinfo').innerHTML = decodeURI(track);
     document.querySelector('.songtime').innerHTML = '00:00 / 00:00';
@@ -76,7 +76,7 @@ const playmusic = (track, pause = false) => {
 
 async function loadAlbumData() {
     try {
-        const response = await fetch('https://Pavan-Hosatti.github.io/Spotify/album.json');
+        const response = await fetch('/Spotify/album.json');
         console.log('Album response status:', response.status);
         
         if (!response.ok) {
@@ -93,7 +93,7 @@ async function loadAlbumData() {
         albums.forEach(album => {
             cardContainer.innerHTML += `
                 <div data-folder="${album.folder}" class="card">
-                    <img src="https://Pavan-Hosatti.github.io/Spotify/img/${album.cover}" alt="${album.name} cover">
+                    <img src="/Spotify/img/${album.cover}" alt="${album.name} cover">
                     <div>${album.name}</div>
                 </div>`;
         });
@@ -114,10 +114,10 @@ async function main() {
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
-            document.getElementById('play').src = 'https://Pavan-Hosatti.github.io/Spotify/img/pause.svg';
+            document.getElementById('play').src = '/Spotify/img/pause.svg';
         } else {
             currentSong.pause();
-            document.getElementById('play').src = 'https://Pavan-Hosatti.github.io/Spotify/img/play.svg';
+            document.getElementById('play').src = '/Spotify/img/play.svg';
         }
     });
 
