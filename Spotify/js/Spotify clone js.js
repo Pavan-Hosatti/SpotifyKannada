@@ -1,7 +1,6 @@
 let currentSong = new Audio();
 let songs = [];
 let currentIndex = -1;
-let currfolder = ''; // Declare currfolder here
 
 function secondsToMinutes(seconds) {
     if (isNaN(seconds) || seconds < 0) return "00:00";
@@ -39,6 +38,12 @@ async function getsongs(folder) {
 const updateSongList = () => {
     let songUL = document.querySelector('.songlist ul');
     songUL.innerHTML = '';
+
+    if (songs.length === 0) {
+        songUL.innerHTML = '<li>No songs available in this album.</li>';
+        return; // Exit the function if there are no songs
+    }
+
     for (const song of songs) {
         songUL.innerHTML += `
             <li>
@@ -53,6 +58,7 @@ const updateSongList = () => {
                 </div>
             </li>`;
     }
+
     Array.from(songUL.getElementsByTagName('li')).forEach((e, index) => {
         e.addEventListener('click', () => {
             playmusic(songs[index]);
@@ -76,26 +82,22 @@ const playmusic = (track, pause = false) => {
 
 async function loadAlbumData() {
     try {
-        const response = await fetch('/Spotify/album.json'); // Path to your album.json
+        const response = await fetch('/Spotify/album.json');
+        console.log('Album response status:', response.status);
         if (!response.ok) throw new Error('Failed to fetch album data');
         const albums = await response.json();
         
         let cardContainer = document.querySelector('.cardContainer');
-        cardContainer.innerHTML = ''; // Clear existing content
-
-        // Loop through albums and create cards
-        albums.forEach(album => {
-            const { name, folder, cover } = album;
+        cardContainer.innerHTML = '';
+        
+        for (let album of albums) {
             cardContainer.innerHTML += `
-                <div data-folder="${folder}" class="card">
-                    <img src="/Spotify/img/${cover}" alt="${name} cover" class="cover" />
-                    <div class="album-info">
-                        <h3>${name}</h3>
-                    </div>
+                <div data-folder="${album.folder}" class="card">
+                    <img src="/Spotify/img/${album.cover}" alt="${album.name}">
+                    <h3>${album.name}</h3>
                 </div>`;
-        });
+        }
 
-        // Add event listeners to the album cards
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', async function () {
                 await getsongs(this.dataset.folder);
@@ -108,7 +110,7 @@ async function loadAlbumData() {
 }
 
 async function main() {
-    await loadAlbumData(); // Load album data
+    await loadAlbumData(); // Updated to call loadAlbumData
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
@@ -167,6 +169,7 @@ async function main() {
 }
 
 main();
+
 
 
 
