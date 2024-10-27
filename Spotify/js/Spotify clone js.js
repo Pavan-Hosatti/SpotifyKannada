@@ -21,9 +21,14 @@ async function getsongs(folder) {
         if (!response.ok) throw new Error('Failed to fetch songs');
 
         let data = await response.json();
-        songs = data.songs || [];
-        
-        console.log(`Songs fetched: ${JSON.stringify(songs)}`); // Logging fetched songs
+        if (!data.songs || data.songs.length === 0) {
+            console.error('No songs found in the playlist.');
+            alert('No songs found. Please check the playlist.');
+            return;
+        }
+
+        songs = data.songs;
+        console.log(`Songs fetched:`, songs); // Log fetched songs
         updateSongList();
 
         // Play the first song in the playlist
@@ -177,11 +182,12 @@ async function main() {
     document.querySelector('.seekbar').addEventListener('click', e => {
         let percent = (e.offsetX / e.target.getBoundingClientRect().width) * 100;
         document.querySelector('.circle').style.left = percent + '%';
-        currentSong.currentTime = ((currentSong.duration) * percent) / 100;
+        currentSong.currentTime = (currentSong.duration * percent) / 100;
     });
 }
 
 main();
+
 
 
 
