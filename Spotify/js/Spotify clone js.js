@@ -13,24 +13,16 @@ function secondsToMinutes(seconds) {
 async function getsongs(folder) {
     try {
         currfolder = folder;
-        console.log(`Fetching songs from folder: Spotify/songs/${currfolder}`);
-        
-        let response = await fetch(`Spotify/songs/${currfolder}/`);
+        console.log(`Fetching songs from folder: Spotify/songs/${currfolder}/info.json`);
+
+        // Fetching song data from the info.json file
+        let response = await fetch(`Spotify/songs/${currfolder}/info.json`);
         console.log('Response:', response);
         
         if (!response.ok) throw new Error('Failed to fetch songs');
-        
-        let div = document.createElement('div');
-        div.innerHTML = await response.text();
-        
-        let as = div.getElementsByTagName('a');
-        songs = [];
-        
-        for (let element of as) {
-            if (element.href.endsWith('.mp3')) {
-                songs.push(element.href.split(`${currfolder}/`)[1]);
-            }
-        }
+
+        let data = await response.json();
+        songs = data.songs || [];  // Make sure the info.json has a "songs" array field
         
         console.log('Songs:', songs);
         updateSongList();
@@ -49,7 +41,7 @@ const updateSongList = () => {
                 <img class='invert' src='Spotify/img/music.svg' alt=''>
                 <div class='info'>
                     <div>${song.replaceAll('%20', ' ')}</div>
-                    <div>Artist</div>
+                    <div>Harry</div>
                 </div>
                 <div class='playnow'>
                     <span>Play now</span>
@@ -78,12 +70,19 @@ const playmusic = (track, pause = false) => {
     currentIndex = songs.indexOf(track);
 }
 
-async function loadPlaylistCovers() {
+async function loadAlbumData() {
     try {
-        const response = await fetch('Spotify/album.json');
-        if (!response.ok) throw new Error('Failed to fetch album data');
+        const response = await fetch('Spotify/albums.json');
+        console.log('Album response status:', response.status);
+        
+        if (!response.ok) {
+            console.error('Response error:', response.statusText);
+            throw new Error('Failed to fetch album data');
+        }
         
         const albums = await response.json();
+        console.log('Fetched albums:', albums);
+        
         const cardContainer = document.querySelector('.cardContainer');
         cardContainer.innerHTML = '';
         
@@ -101,13 +100,13 @@ async function loadPlaylistCovers() {
             });
         });
     } catch (error) {
-        console.error('Error loading playlist covers:', error);
-        alert('Unable to load playlists.');
+        console.error('Error loading album data:', error);
+        alert('Unable to load album data.');
     }
 }
 
 async function main() {
-    await loadPlaylistCovers();
+    await loadAlbumData();
     document.getElementById('play').addEventListener('click', () => {
         if (currentSong.paused) {
             currentSong.play();
@@ -166,6 +165,7 @@ async function main() {
 }
 
 main();
+
 
 
 
