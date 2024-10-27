@@ -80,7 +80,7 @@ const playmusic = (track, pause = false) => {
 
 async function loadPlaylistCovers() {
     try {
-        const response = await fetch('Spotify/songs/${currfolder}/info.json');
+        const response = await fetch('Spotify/songs/${folder}/info.json');
         if (!response.ok) throw new Error('Failed to fetch json data');
         
         const albums = await response.json();
