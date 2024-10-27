@@ -80,25 +80,29 @@ const playmusic = (track, pause = false) => {
 
 async function loadPlaylistCovers() {
     try {
-        // Use 'folder' parameter instead of 'currfolder'
-        const response = await fetch(`Spotify/songs/info.json`); // This is still currfolder, we'll fix that in the click event
-        if (!response.ok) throw new Error('Failed to fetch json data');
-        
-        const albums = await response.json();
+        const playlistFolders = ['emotional', 'feel_good', 'powerful_and_energetic', 'romantic_and_soulful'];
         const cardContainer = document.querySelector('.cardContainer');
         cardContainer.innerHTML = '';
-        
-        albums.forEach(album => {
-            cardContainer.innerHTML += `
-                <div data-folder="${album.title}" class="card">
-                    <img src="Spotify/songs/${album.title}/cover.jpg" alt="${album.name} cover">
-                    <div>${album.name}</div>
-                </div>`;
-        });
-        
+
+        for (const folder of playlistFolders) {
+            try {
+                const response = await fetch(`Spotify/songs/${folder}/info.json`);
+                if (!response.ok) throw new Error(`Could not fetch info.json for ${folder}`);
+                
+                const albumData = await response.json();
+                cardContainer.innerHTML += `
+                    <div data-folder="${folder}" class="card">
+                        <img src="Spotify/songs/${folder}/cover.jpg" alt="${albumData.name} cover">
+                        <div>${albumData.name}</div>
+                    </div>`;
+            } catch (error) {
+                console.error(`Error fetching JSON for folder ${folder}:`, error);
+            }
+        }
+
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', async function () {
-                await getsongs(this.dataset.folder); // Using folder here
+                await getsongs(this.dataset.folder);
             });
         });
     } catch (error) {
@@ -168,6 +172,7 @@ async function main() {
 }
 
 main();
+
 
 
 
