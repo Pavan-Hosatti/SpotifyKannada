@@ -80,8 +80,8 @@ const playmusic = (track, pause = false) => {
 
 async function loadPlaylistCovers() {
     try {
-        const response = await fetch('Spotify/album.json');
-        if (!response.ok) throw new Error('Failed to fetch album data');
+        const response = await fetch('Spotify/songs/info.json');
+        if (!response.ok) throw new Error('Failed to fetch json data');
         
         const albums = await response.json();
         const cardContainer = document.querySelector('.cardContainer');
@@ -89,8 +89,8 @@ async function loadPlaylistCovers() {
         
         albums.forEach(album => {
             cardContainer.innerHTML += `
-                <div data-folder="${album.folder}" class="card">
-                    <img src="Spotify/songs/${album.folder}/cover.jpg" alt="${album.name} cover">
+                <div data-title="${album.title}" class="card">
+                    <img src="Spotify/songs/${album.title}/cover.jpg" alt="${album.name} cover">
                     <div>${album.name}</div>
                 </div>`;
         });
