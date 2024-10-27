@@ -1,0 +1,22 @@
+[
+    {
+        "name": "Emotional",
+        "folder": "emotional",
+        "cover": "cover.jpg"
+    },
+    {
+        "name": "Feel Good",
+        "folder": "feel_good",
+        "cover": "cover.jpg"
+    },
+    {
+        "name": "Powerful and Energetic",
+        "folder": "powerful and energetic",
+        "cover": "cover.jpg"
+    },
+    {
+        "name": "Romantic and Soulful",
+        "folder": "romantic_and_soulful",
+        "cover": "cover.jpg"
+    }
+]
