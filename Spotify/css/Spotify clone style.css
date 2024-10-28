@@ -418,9 +418,7 @@ body {
         margin-top: 10px;
     }
 }
-.cardContainer{
-    padding-bottom: 240px;
-}
+
 
 @media (max-width:590) {
     .songtime {
